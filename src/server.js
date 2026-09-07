@@ -8,6 +8,7 @@ const { htmlToPdf, isBrowserAlive, closeBrowser } = require('./pdf');
 loadEnv();
 
 const PORT = Number(process.env.PORT || 3000);
+const HOST = process.env.HOST || '0.0.0.0';
 const API_KEY = process.env.API_KEY || '';
 const MAX_HTML_BYTES = Number(process.env.MAX_HTML_BYTES || 2 * 1024 * 1024);
 const CONVERT_TIMEOUT_MS = Number(process.env.CONVERT_TIMEOUT_MS || 30000);
@@ -129,8 +130,8 @@ function withTimeout(promise, ms) {
     });
 }
 
-const server = app.listen(PORT, '127.0.0.1', () => {
-    console.log(`[htmltopdf] écoute 127.0.0.1:${PORT}`);
+const server = app.listen(PORT, HOST, () => {
+    console.log(`[htmltopdf] écoute ${HOST}:${PORT}`);
 });
 
 async function shutdown() {

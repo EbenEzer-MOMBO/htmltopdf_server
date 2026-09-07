@@ -44,12 +44,17 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now htmltopdf
 ```
 
-8. Nginx (TLS) en reverse proxy vers `127.0.0.1:3000`. Le service n’écoute que en local.
+8. Nginx (TLS) en reverse proxy vers `127.0.0.1:3000`. En VPS derrière Nginx, mettre `HOST=127.0.0.1`.
 9. Firewall : ouvrir uniquement 443. Optionnel : allowlist IP du serveur Laravel.
+
+## Render (Web Service)
+
+Le service doit écouter `0.0.0.0` et le port fourni par Render (`PORT`). C’est le défaut (`HOST=0.0.0.0`).
+Définir `API_KEY` dans les env vars Render. Start command : `node src/server.js`. Build : `npm ci && npx playwright install chromium`.
 
 ## Variables d’environnement
 
-Voir `.env.example` : `PORT`, `API_KEY`, `MAX_HTML_BYTES`, `CONVERT_TIMEOUT_MS`, `CONCURRENCY`.
+Voir `.env.example` : `PORT`, `HOST`, `API_KEY`, `MAX_HTML_BYTES`, `CONVERT_TIMEOUT_MS`, `CONCURRENCY`.
 
 ## Côté Eventime
 
