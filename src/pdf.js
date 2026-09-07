@@ -61,29 +61,30 @@ async function htmlToPdf(html, options = {}) {
             document.body.style.margin = '0';
             document.body.style.padding = '0';
             document.body.style.display = 'block';
-            el.style.position = 'absolute';
+            el.style.position = 'relative';
             el.style.left = '0';
             el.style.top = '0';
             el.style.margin = '0';
-            el.style.overflow = 'hidden';
             const r = el.getBoundingClientRect();
             return {
-                width: Math.round(r.width),
-                height: Math.round(r.height),
+                width: Math.ceil(r.width),
+                height: Math.ceil(r.height),
             };
         });
 
-        await page.setViewportSize({
-            width: Math.max(size.width, 1),
-            height: Math.max(size.height, 1),
+        const w = Math.max(size.width, 1);
+        const h = Math.max(size.height, 1);
+
+        await page.setViewportSize({ width: w, height: h });
+        await page.addStyleTag({
+            content: `@page { size: ${w}px ${h}px; margin: 0; } html, body { width:${w}px; height:${h}px; overflow:hidden; }`,
         });
 
         const pdf = await page.pdf({
-            width: `${size.width}px`,
-            height: `${size.height}px`,
             printBackground: options.printBackground !== false,
+            preferCSSPageSize: true,
+            pageRanges: '1',
             margin: { top: '0', right: '0', bottom: '0', left: '0' },
-            preferCSSPageSize: false,
             scale: 1,
         });
 
