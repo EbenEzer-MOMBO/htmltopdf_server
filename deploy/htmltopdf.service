@@ -1,0 +1,16 @@
+[Unit]
+Description=Eventime HTML to PDF relay
+After=network.target
+
+[Service]
+Type=simple
+User=htmltopdf
+WorkingDirectory=/opt/htmltopdf_server
+EnvironmentFile=/opt/htmltopdf_server/.env
+ExecStart=/usr/bin/node src/server.js
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
