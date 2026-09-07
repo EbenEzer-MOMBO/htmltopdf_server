@@ -59,7 +59,7 @@ Le `postinstall` télécharge Chromium **dans `node_modules`** (`PLAYWRIGHT_BROW
 
 ## Variables d’environnement
 
-Voir `.env.example` : `PORT`, `HOST`, `API_KEY`, `MAX_HTML_BYTES`, `CONVERT_TIMEOUT_MS`, `CONCURRENCY`.
+Voir `.env.example` : `PORT`, `HOST`, `API_KEY`, `MAX_HTML_BYTES` (défaut 20 Mo : les affiches en data URI dépassent souvent 2 Mo), `CONVERT_TIMEOUT_MS`, `CONCURRENCY`.
 
 ## Côté Eventime
 

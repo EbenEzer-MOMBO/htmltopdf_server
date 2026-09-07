@@ -10,7 +10,7 @@ loadEnv();
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
 const API_KEY = process.env.API_KEY || '';
-const MAX_HTML_BYTES = Number(process.env.MAX_HTML_BYTES || 2 * 1024 * 1024);
+const MAX_HTML_BYTES = Number(process.env.MAX_HTML_BYTES || 20 * 1024 * 1024);
 const CONVERT_TIMEOUT_MS = Number(process.env.CONVERT_TIMEOUT_MS || 30000);
 const CONCURRENCY = Number(process.env.CONCURRENCY || 1);
 
