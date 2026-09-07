@@ -50,7 +50,12 @@ sudo systemctl enable --now htmltopdf
 ## Render (Web Service)
 
 Le service doit écouter `0.0.0.0` et le port fourni par Render (`PORT`). C’est le défaut (`HOST=0.0.0.0`).
-Définir `API_KEY` dans les env vars Render. Start command : `node src/server.js`. Build : `npm ci && npx playwright install chromium`.
+
+Le `postinstall` télécharge Chromium **dans `node_modules`** (`PLAYWRIGHT_BROWSERS_PATH=0`). Sans ça, Render ne trouve pas le binaire au runtime (`Executable doesn't exist at /opt/render/.cache/ms-playwright/...`).
+
+- Env : `API_KEY`, `PLAYWRIGHT_BROWSERS_PATH=0`, `HOST=0.0.0.0`
+- Build : `npm ci` (suffit, le postinstall installe Chromium + deps Linux)
+- Start : `node src/server.js`
 
 ## Variables d’environnement
 

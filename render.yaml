@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: htmltopdf
+    runtime: node
+    buildCommand: npm ci
+    startCommand: node src/server.js
+    envVars:
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: "0"
+      - key: HOST
+        value: "0.0.0.0"
