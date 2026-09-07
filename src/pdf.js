@@ -43,35 +43,48 @@ async function isBrowserAlive() {
 async function htmlToPdf(html, options = {}) {
     const b = await getBrowser();
     const context = await b.newContext({
-        viewport: { width: 400, height: 900 },
-        deviceScaleFactor: 2,
+        viewport: { width: 340, height: 900 },
+        deviceScaleFactor: 1,
     });
     const page = await context.newPage();
 
     try {
         await page.setContent(html, {
-            waitUntil: 'networkidle',
+            waitUntil: 'load',
             timeout: options.timeoutMs || 25000,
         });
 
-        const wrap = page.locator('.ticket-wrap').first();
-        let width = options.width || process.env.PDF_DEFAULT_WIDTH || '340px';
-        let height = options.height || process.env.PDF_DEFAULT_HEIGHT || '720px';
+        const size = await page.evaluate(() => {
+            const el = document.querySelector('.ticket-wrap') || document.body;
+            document.documentElement.style.margin = '0';
+            document.documentElement.style.padding = '0';
+            document.body.style.margin = '0';
+            document.body.style.padding = '0';
+            document.body.style.display = 'block';
+            el.style.position = 'absolute';
+            el.style.left = '0';
+            el.style.top = '0';
+            el.style.margin = '0';
+            el.style.overflow = 'hidden';
+            const r = el.getBoundingClientRect();
+            return {
+                width: Math.round(r.width),
+                height: Math.round(r.height),
+            };
+        });
 
-        if (await wrap.count()) {
-            const box = await wrap.boundingBox();
-            if (box) {
-                width = `${Math.ceil(box.width)}px`;
-                height = `${Math.ceil(box.height)}px`;
-            }
-        }
+        await page.setViewportSize({
+            width: Math.max(size.width, 1),
+            height: Math.max(size.height, 1),
+        });
 
         const pdf = await page.pdf({
-            width,
-            height,
+            width: `${size.width}px`,
+            height: `${size.height}px`,
             printBackground: options.printBackground !== false,
             margin: { top: '0', right: '0', bottom: '0', left: '0' },
             preferCSSPageSize: false,
+            scale: 1,
         });
 
         return pdf;
