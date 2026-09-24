@@ -3,7 +3,8 @@ const path = require('path');
 const crypto = require('crypto');
 const express = require('express');
 const { JobQueue } = require('./queue');
-const { htmlToPdf, isBrowserAlive, closeBrowser } = require('./pdf');
+const { htmlToPdf, htmlToPdfDocument, isBrowserAlive, closeBrowser } = require('./pdf');
+const { renderBilletsHtml } = require('./ticket-html');
 
 loadEnv();
 
@@ -107,6 +108,64 @@ app.post('/v1/pdf', requireApiKey, async (req, res) => {
         res.send(pdf);
     } catch (err) {
         console.error('[htmltopdf] conversion échouée', err);
+        res.status(500).json({
+            error: 'Conversion PDF échouée',
+            detail: err.message || String(err),
+        });
+    }
+});
+
+app.post('/v1/marche241/billets', requireApiKey, async (req, res) => {
+    const body = req.body || {};
+    const evenement = body.evenement || {};
+    if (typeof evenement.nom !== 'string' || evenement.nom.trim() === '') {
+        return res.status(400).json({ error: 'evenement.nom requis' });
+    }
+
+    let billets = [];
+    if (Array.isArray(body.billets) && body.billets.length > 0) {
+        billets = body.billets.map((item) => ({
+            type_billet: String(item.type_billet || body.type_billet || 'Billet'),
+            numero: item.numero,
+        }));
+    } else if (Array.isArray(body.numeros) && body.numeros.length > 0) {
+        const typeBillet = String(body.type_billet || 'Billet');
+        billets = body.numeros.map((numero) => ({ type_billet: typeBillet, numero }));
+    }
+
+    if (billets.length === 0) {
+        return res.status(400).json({ error: 'Liste de numéros ou de billets requise' });
+    }
+    if (billets.length > 50) {
+        return res.status(400).json({ error: 'Maximum 50 billets par requête' });
+    }
+
+    const html = renderBilletsHtml({
+        evenement: {
+            nom: evenement.nom,
+            date: evenement.date || '',
+            lieu: evenement.lieu || '',
+            adresse: evenement.adresse || '',
+        },
+        billets,
+    });
+
+    try {
+        const pdf = await queue.run(() =>
+            withTimeout(
+                htmlToPdfDocument(html, {
+                    printBackground: true,
+                    timeoutMs: CONVERT_TIMEOUT_MS,
+                }),
+                CONVERT_TIMEOUT_MS + 5000,
+            ),
+        );
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Length', pdf.length);
+        res.send(pdf);
+    } catch (err) {
+        console.error('[htmltopdf] conversion billets échouée', err);
         res.status(500).json({
             error: 'Conversion PDF échouée',
             detail: err.message || String(err),

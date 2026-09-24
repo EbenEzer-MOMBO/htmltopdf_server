@@ -94,6 +94,35 @@ async function htmlToPdf(html, options = {}) {
     }
 }
 
+/**
+ * Conversion multi-pages (billets Marché 241). Ne remplace pas htmlToPdf
+ * utilisé par Eventime (page unique, mesure .ticket-wrap).
+ */
+async function htmlToPdfDocument(html, options = {}) {
+    const b = await getBrowser();
+    const context = await b.newContext({
+        viewport: { width: 340, height: 720 },
+        deviceScaleFactor: 1,
+    });
+    const page = await context.newPage();
+
+    try {
+        await page.setContent(html, {
+            waitUntil: 'load',
+            timeout: options.timeoutMs || 25000,
+        });
+
+        return await page.pdf({
+            printBackground: options.printBackground !== false,
+            preferCSSPageSize: true,
+            margin: { top: '0', right: '0', bottom: '0', left: '0' },
+            scale: 1,
+        });
+    } finally {
+        await context.close();
+    }
+}
+
 async function closeBrowser() {
     if (browser) {
         await browser.close().catch(() => {});
@@ -101,4 +130,4 @@ async function closeBrowser() {
     }
 }
 
-module.exports = { htmlToPdf, isBrowserAlive, closeBrowser };
+module.exports = { htmlToPdf, htmlToPdfDocument, isBrowserAlive, closeBrowser };

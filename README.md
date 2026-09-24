@@ -9,7 +9,8 @@ Laravel envoie le HTML déjà rendu (billet) ; ce service renvoie un PDF binaire
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
 | GET | `/health` | non | Processus + Chromium |
-| POST | `/v1/pdf` | `X-Api-Key` | Conversion |
+| POST | `/v1/pdf` | `X-Api-Key` | Conversion HTML fourni (Eventime) |
+| POST | `/v1/marche241/billets` | `X-Api-Key` | Billets Marché 241 (HTML interne) |
 
 **Body JSON**
 
@@ -27,6 +28,18 @@ Laravel envoie le HTML déjà rendu (billet) ; ce service renvoie un PDF binaire
 Réponse : `application/pdf`.
 
 Pas d’URL distante en entrée (évite le SSRF) : uniquement du HTML.
+
+**Marché 241** — `POST /v1/marche241/billets` (même clé). Le HTML n’est pas fourni par le client : le service le compose.
+
+```json
+{
+  "evenement": { "nom": "Concert", "date": "12 juin 2026", "lieu": "Libreville" },
+  "type_billet": "Standard",
+  "numeros": [1, 2, 3]
+}
+```
+
+`billets: [{ "type_billet": "VIP", "numero": 12 }]` est aussi accepté. Réponse : `application/pdf`.
 
 ## Installation VPS (sans Docker)
 
