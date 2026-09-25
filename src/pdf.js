@@ -101,7 +101,7 @@ async function htmlToPdf(html, options = {}) {
 async function htmlToPdfDocument(html, options = {}) {
     const b = await getBrowser();
     const context = await b.newContext({
-        viewport: { width: 340, height: 720 },
+        viewport: { width: 340, height: 640 },
         deviceScaleFactor: 1,
     });
     const page = await context.newPage();
@@ -111,6 +111,18 @@ async function htmlToPdfDocument(html, options = {}) {
             waitUntil: 'load',
             timeout: options.timeoutMs || 25000,
         });
+        await page.evaluate(() =>
+            Promise.all(
+                [...document.images].map((img) =>
+                    img.complete
+                        ? Promise.resolve()
+                        : new Promise((resolve) => {
+                              img.onload = resolve;
+                              img.onerror = resolve;
+                          }),
+                ),
+            ),
+        );
 
         return await page.pdf({
             printBackground: options.printBackground !== false,

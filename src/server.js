@@ -140,14 +140,16 @@ app.post('/v1/marche241/billets', requireApiKey, async (req, res) => {
         return res.status(400).json({ error: 'Maximum 50 billets par requête' });
     }
 
-    const html = renderBilletsHtml({
+    const html = await renderBilletsHtml({
         evenement: {
             nom: evenement.nom,
             date: evenement.date || '',
             lieu: evenement.lieu || '',
             adresse: evenement.adresse || '',
+            image: evenement.image || '',
         },
         billets,
+        jeton: typeof body.jeton === 'string' ? body.jeton : '',
     });
 
     try {
