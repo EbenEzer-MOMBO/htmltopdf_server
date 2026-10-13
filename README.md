@@ -39,7 +39,7 @@ Pas d’URL distante en entrée (évite le SSRF) : uniquement du HTML.
 }
 ```
 
-`billets: [{ "type_billet": "VIP", "numero": 12 }]` est aussi accepté. Réponse : `application/pdf`.
+`billets: [{ "type_billet": "VIP", "numero": 12, "participant_nom": "Awa Mba" }]` est aussi accepté (`participant_nom` optionnel : billet nominatif, nom affiché sur la carte, 120 caractères max). Réponse : `application/pdf`.
 
 ## Installation VPS (sans Docker)
 
