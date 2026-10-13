@@ -127,7 +127,7 @@ app.post('/v1/marche241/billets', requireApiKey, async (req, res) => {
         billets = body.billets.map((item) => ({
             type_billet: String(item.type_billet || body.type_billet || 'Billet'),
             numero: item.numero,
-            participant_nom: item.participant_nom || '',
+            participant_nom: typeof item.participant_nom === 'string' ? item.participant_nom.trim().slice(0, 120) : '',
         }));
     } else if (Array.isArray(body.numeros) && body.numeros.length > 0) {
         const typeBillet = String(body.type_billet || 'Billet');

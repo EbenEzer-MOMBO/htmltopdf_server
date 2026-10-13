@@ -75,6 +75,13 @@ async function renderQrPng(payload) {
 
 async function renderTicketCard(evenement, typeBillet, numero, jeton, logoSrc, participantNom) {
     const nom = escapeHtml(evenement.nom);
+    // Billet nominatif : nom du titulaire, avec retour à la ligne forcé pour les noms longs sans espace
+    const ligneTitulaire = participantNom
+        ? `<span style="font-size:13px;font-weight:600;color:#111827;overflow-wrap:anywhere">${escapeHtml(participantNom)}</span>`
+        : '';
+    const mentionBillet = participantNom
+        ? "Billet nominatif. Scannez à l'entrée."
+        : "Scannez à l'entrée. Billet au porteur, aucun nom associé.";
     const date = escapeHtml(evenement.date || '');
     const lieu = escapeHtml(lieuLine(evenement));
     const type = escapeHtml(typeBillet);
@@ -110,12 +117,8 @@ async function renderTicketCard(evenement, typeBillet, numero, jeton, logoSrc, p
           <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
             <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6b7280">Billet n°</span>
             <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:34px;font-weight:600;line-height:1;background:linear-gradient(90deg,#508e27,#74adaf);-webkit-background-clip:text;background-clip:text;color:transparent">${displayNumero}</span>
-            ${participantNom
-                ? `<span style="font-size:13px;font-weight:600;color:#111827">${escapeHtml(participantNom)}</span>`
-                : ''}
-            <span style="font-size:11px;line-height:1.45;color:#6b7280">${participantNom
-                ? "Billet nominatif. Scannez à l'entrée."
-                : "Scannez à l'entrée. Billet au porteur, aucun nom associé."}</span>
+            ${ligneTitulaire}
+            <span style="font-size:11px;line-height:1.45;color:#6b7280">${mentionBillet}</span>
           </div>
         </div>
       </div>
